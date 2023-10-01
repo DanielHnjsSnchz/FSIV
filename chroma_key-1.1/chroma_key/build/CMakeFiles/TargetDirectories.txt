@@ -1,0 +1,4 @@
+/home/i02hisad/Desktop/23-24/FSIV/P1/chroma_key-1.1/chroma_key/build/CMakeFiles/chroma_key.dir
+/home/i02hisad/Desktop/23-24/FSIV/P1/chroma_key-1.1/chroma_key/build/CMakeFiles/test_common_code.dir
+/home/i02hisad/Desktop/23-24/FSIV/P1/chroma_key-1.1/chroma_key/build/CMakeFiles/edit_cache.dir
+/home/i02hisad/Desktop/23-24/FSIV/P1/chroma_key-1.1/chroma_key/build/CMakeFiles/rebuild_cache.dir
