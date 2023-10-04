@@ -1,0 +1,4 @@
+/home/i02hisad/Desktop/23-24/FSIV/P1/cbg_process-1.5/cbg_process/build/CMakeFiles/cbg_process.dir
+/home/i02hisad/Desktop/23-24/FSIV/P1/cbg_process-1.5/cbg_process/build/CMakeFiles/cbg_process_test_common_code.dir
+/home/i02hisad/Desktop/23-24/FSIV/P1/cbg_process-1.5/cbg_process/build/CMakeFiles/edit_cache.dir
+/home/i02hisad/Desktop/23-24/FSIV/P1/cbg_process-1.5/cbg_process/build/CMakeFiles/rebuild_cache.dir
