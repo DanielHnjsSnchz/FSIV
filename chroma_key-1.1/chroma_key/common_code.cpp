@@ -56,9 +56,10 @@ fsiv_apply_chroma_key(const cv::Mat &foreg, const cv::Mat& backg, int hue,
     //  foreg img. You can use cv::resize to assure this.
 
     cv::Mat newBackg;
+    backg.copyTo(newBackg);
 
     if(foreg.size()!=backg.size()){
-        cv::resize(backg,backg,foreg.size()/*,0,0,cv::INTER_AREA*/);
+        cv::resize(backg,newBackg,foreg.size()/*,0,0,cv::INTER_AREA*/);
     }
 
     lower_b=cv::Scalar(hue-sensitivity,0,0);
@@ -69,7 +70,7 @@ fsiv_apply_chroma_key(const cv::Mat &foreg, const cv::Mat& backg, int hue,
 
     mask=fsiv_create_mask_from_hsv_range(foreg,lower_b,upper_b);
     mask=255-mask;
-    out=fsiv_combine_images(foreg,backg,mask);
+    out=fsiv_combine_images(foreg,newBackg,mask);
     //
     CV_Assert(out.size()==foreg.size());
     CV_Assert(out.type()==foreg.type());
