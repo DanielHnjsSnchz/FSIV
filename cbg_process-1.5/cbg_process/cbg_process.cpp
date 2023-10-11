@@ -34,6 +34,66 @@ const cv::String keys =
 
 
 
+typedef struct
+{
+    cv::Mat in;
+    cv::Mat out;
+    double contrast;
+    double bright;
+    double gamma;
+    bool luma;
+} AppState;
+
+void
+on_change_contrast(int v, void* app_state_)
+{
+    AppState* app_state = static_cast<AppState*>(app_state_);
+    app_state->contrast = ((double) v)/100.0; 
+    
+    app_state->out = fsiv_cbg_process(app_state->in, app_state->out, app_state->contrast,
+                app_state->bright, app_state->gamma, app_state->luma);
+
+    cv::imshow("PROCESADA", app_state->out);
+}
+
+void
+on_change_bright(int v, void* app_state_)
+{
+    AppState* app_state = static_cast<AppState*>(app_state_);
+    app_state->bright = ((double) v) * 2.0 / 200.0 - 1.0; 
+    
+    app_state->out = fsiv_cbg_process(app_state->in, app_state->out, app_state->contrast,
+                app_state->bright, app_state->gamma, app_state->luma);
+
+    cv::imshow("PROCESADA", app_state->out);
+}
+
+void
+on_change_gamma(int v, void* app_state_)
+{
+    AppState* app_state = static_cast<AppState*>(app_state_);
+    app_state->gamma = ((double) v)/100.0; 
+    
+    app_state->out = fsiv_cbg_process(app_state->in, app_state->out, app_state->contrast,
+                app_state->bright, app_state->gamma, app_state->luma);
+
+    cv::imshow("PROCESADA", app_state->out);
+}
+
+void
+on_change_luma(int v, void* app_state_)
+{
+    AppState* app_state = static_cast<AppState*>(app_state_);
+    app_state->luma = v;
+    
+    app_state->out = fsiv_cbg_process(app_state->in, app_state->out, app_state->contrast,
+                app_state->bright, app_state->gamma, app_state->luma);
+
+    cv::imshow("PROCESADA", app_state->out);
+}
+
+
+
 int
 main (int argc, char* const* argv)
 {
@@ -65,11 +125,40 @@ main (int argc, char* const* argv)
 
 
       //TODO
+      AppState app_state;
 
+        app_state.in = cv::imread(input_name);
+        app_state.out = app_state.in.clone();
+        app_state.contrast = parser.get<double>("c");
+        app_state.bright = parser.get<double>("b");
+        app_state.gamma = parser.get<double>("g");
+        app_state.luma = parser.has("l");
+
+        if(parser.has("i")){
+
+            fsiv_cbg_process(app_state.in, app_state.out, app_state.contrast,
+                app_state.bright, app_state.gamma, app_state.luma);
+        
+            cv::createTrackbar("C [0, 2]", "PROCESADA", NULL, 200, on_change_contrast, &app_state);
+            cv::setTrackbarPos("C [0, 2]", "PROCESADA", app_state.contrast * 100);
+            cv::createTrackbar("B [-1, 1]", "PROCESADA", NULL, 200, on_change_bright, &app_state);
+            cv::setTrackbarPos("B [-1, 1]", "PROCESADA", (app_state.bright + 1) * 200 / (1 + 1));
+            cv::createTrackbar("G [0, 2]", "PROCESADA", NULL, 200, on_change_gamma, &app_state);
+            cv::setTrackbarPos("G [0, 2]", "PROCESADA", app_state.gamma * 100);
+            cv::createTrackbar("L [0, 1]", "PROCESADA", NULL, 1, on_change_luma, &app_state);
+            cv::setTrackbarPos("L [0, 1]", "PROCESADA", app_state.luma ? 1 : 0);
+
+        }else {
+            fsiv_cbg_process(app_state.in, app_state.out, app_state.contrast,
+                app_state.bright, app_state.gamma, app_state.luma);
+        }
+
+        cv::imshow("ORIGINAL", app_state.in);
+        cv::imshow("PROCESADA", app_state.out);
 
       int key = cv::waitKey(0) & 0xff;
 
-      if (key != 27)
+      if (key != 27)//tecla escape
       {
           if (!cv::imwrite(output_name, output))
           {
