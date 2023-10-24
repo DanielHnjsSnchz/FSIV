@@ -71,14 +71,37 @@ main (int argc, char* const* argv)
 
       //TODO
 
+      if (input.channels() > 1){
 
+          std::vector<cv::Mat> channels_RGB, channels_HSV;
 
+          cv::split(input, channels_RGB);
+          fsiv_image_equalization(channels_RGB[0], channels_RGB[0], hold_median, radius);
+          fsiv_image_equalization(channels_RGB[1], channels_RGB[1], hold_median, radius);
+          fsiv_image_equalization(channels_RGB[2], channels_RGB[2], hold_median, radius);
+          cv::merge(channels_RGB, output);
+          cv::namedWindow("PROCESADA_RGB", cv::WINDOW_GUI_EXPANDED);
+          cv::imshow("PROCESADA_RGB", output);
 
+          output.release();
 
+          cv::cvtColor(input, output, cv::COLOR_BGR2HSV);
+          cv::split(output, channels_HSV);
+          fsiv_image_equalization(channels_HSV[2], channels_HSV[2], hold_median, radius);
+          cv::merge(channels_HSV, output);
+          cv::cvtColor(output, output, cv::COLOR_HSV2BGR);
+          cv::namedWindow("PROCESADA_HSV", cv::WINDOW_GUI_EXPANDED);
+          cv::imshow("PROCESADA_HSV", output);
+
+      } else {
+          fsiv_image_equalization(input, output, hold_median, radius);
+          cv::namedWindow("PROCESADA_NORMAl_CH1", cv::WINDOW_GUI_EXPANDED);
+          cv::imshow("PROCESADA_NORMAl_CH1", output);
+      }
       //
 
       cv::imshow("ORIGINAL", input);
-      cv::imshow("PROCESADA", output);
+      //cv::imshow("PROCESADA", output);
 
       int key = cv::waitKey(0) & 0xff;
 
