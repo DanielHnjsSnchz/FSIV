@@ -1,0 +1,3 @@
+/home/i02hisad/Desktop/23-24/FSIV/show_testfails/build/CMakeFiles/show_testfails.dir
+/home/i02hisad/Desktop/23-24/FSIV/show_testfails/build/CMakeFiles/edit_cache.dir
+/home/i02hisad/Desktop/23-24/FSIV/show_testfails/build/CMakeFiles/rebuild_cache.dir
