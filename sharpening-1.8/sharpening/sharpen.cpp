@@ -135,16 +135,19 @@ main (int argc, char* const* argv)
           return 0;
       }
 
-      cv::Mat input = cv::imread(input_name);
+      user_data.input = cv::imread(input_name);
 
-      if (input.empty())
+      if (user_data.input.empty())
 	  {
 		  std::cerr << "Error: could not open the input image '" << input_name << "'." << std::endl;
 		  return EXIT_FAILURE;
 	  }
-      cv::Mat output = input.clone();
+      user_data.output = user_data.input.clone();
 
       //TODO
+
+      cv::namedWindow("INPUT");
+      cv::namedWindow("OUTPUT");
 
       if (parser.has("i")){
             cv::createTrackbar("Luma", "OUTPUT", nullptr, 1, on_change_l, &user_data);
@@ -166,14 +169,6 @@ main (int argc, char* const* argv)
       cv::imshow("OUTPUT", user_data.output);
 
       //
-
-      cv::namedWindow("INPUT");
-      cv::namedWindow("OUTPUT");
-
-
-      cv::imshow("INPUT", input);
-      cv::imshow("OUTPUT", output);
-
 
       int key = cv::waitKey(0) & 0xff;
 

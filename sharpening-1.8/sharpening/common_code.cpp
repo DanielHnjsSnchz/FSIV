@@ -16,9 +16,11 @@ fsiv_create_gaussian_filter(const int r)
 
     for (int i = r; i >= -r; --i){
         for(int j = -r; j <= r; ++j){
+
             float dividendo = - (std::pow(i, 2) + std::pow(j, 2));
             float divisor = 2 * std::pow(sigma, 2);
             ret_v.at<float>(i+r, j+r) = std::exp(dividendo/divisor);
+            
         }
     }
 
@@ -41,8 +43,10 @@ fsiv_extend_image(const cv::Mat& img, const cv::Size& new_size, int ext_type)
     //Hint: use cv::copyMakeBorder()
 
     out = cv::Mat::zeros(new_size, img.type());
+
     float border_tb = (new_size.height - img.size().height)/2.0;
     float border_lr = (new_size.width - img.size().width)/2.0;
+
     if (ext_type == 0)
         cv::copyMakeBorder(img, out, floor(border_tb), ceil(border_tb),
             floor(border_lr), ceil(border_lr), cv::BORDER_CONSTANT, cv::Scalar(0,0,0));
