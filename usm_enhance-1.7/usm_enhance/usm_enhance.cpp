@@ -50,6 +50,7 @@ void on_change_r(int v, void * user_data_)
     UserData * user_data = static_cast<UserData*>(user_data_);
     user_data->r = v + 1;
     user_data->in.convertTo(user_data->in, CV_32F, 1.0/255.0, 0.0);
+
     if (user_data->in.channels() > 1){
         std::vector<cv::Mat> channels;
         cv::cvtColor(user_data->in, user_data->out, cv::COLOR_BGR2HSV);
@@ -222,14 +223,12 @@ main (int argc, char* const* argv)
             std::vector<cv::Mat> channels;
             cv::cvtColor(user_data.in, user_data.out, cv::COLOR_BGR2HSV);
             cv::split(user_data.out, channels);
-            channels[2] = fsiv_usm_enhance(channels[2], user_data.g, user_data.r, 
-                user_data.filter_type, user_data.circular, &user_data.mask);
+            channels[2] = fsiv_usm_enhance(channels[2], user_data.g, user_data.r, user_data.filter_type, user_data.circular, &user_data.mask);
             cv::merge(channels, user_data.out);
             cv::cvtColor(user_data.out, user_data.out, cv::COLOR_HSV2BGR);
             
         } else {
-            user_data.out = fsiv_usm_enhance(user_data.in, user_data.g, user_data.r, 
-                user_data.filter_type, user_data.circular, &user_data.mask);
+            user_data.out = fsiv_usm_enhance(user_data.in, user_data.g, user_data.r, user_data.filter_type, user_data.circular, &user_data.mask);
         }
         
 

@@ -1,0 +1,24 @@
+Se han realizado todos los apartados de la práctica. Los comandos
+se ejecutarán en la dirección /i02hisad/sharpening
+
+1) Filtrado LAP_4
+
+./build/sharpen ./data/ciclista_original.jpg ./data/out_ciclista.jpg
+
+2) Filtrado LAP_8 con extensión circular
+
+./build/sharpen -c -f=1 ./data/ciclista_original.jpg ./data/out_ciclista.jpg
+
+3) Filtrado DoG con extension circular, r1 = 5 y r2 = 15
+
+./build/sharpen -c -f=2 --r1=5 --r2=15 ./data/ciclista_original.jpg ./data/out_ciclista.jpg
+
+4) Filtrado LAP_8 solo luma
+
+./build/sharpen -l -f=1 ./data/ciclista_original.jpg ./data/out_ciclista.jpg
+
+5) Modo interactivo
+
+./build/sharpen -i ./data/ciclista_original.jpg ./data/out_ciclista.jpg
+
+Link del video: https://youtu.be/aCcc54xJ6iA

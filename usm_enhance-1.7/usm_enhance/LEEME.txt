@@ -1,0 +1,20 @@
+Se han realizado todos los apartados de la práctica. Los comandos
+se ejecutarán en la dirección /i02hisad/usm_enhance
+
+1) Filtrado Box con expansión de ceros, ganancia = 1 y radio 1
+
+./build/usm_enhance ./data/ciclista_original.jpg ./data/out_ciclista.png 
+
+2) Filtrado Box con expansión circular, ganancia 10 y radio 10
+
+./build/usm_enhance -c -g=10 -r=10 ./data/ciclista_original.jpg ./data/out_ciclista.png 
+
+3) Filtrado Gaussiano con expansión circular, ganancia 10 y radio 10
+
+./build/usm_enhance -c -f=1 -g=10 -r=10 ./data/ciclista_original.jpg ./data/out_ciclista.png
+
+4) Uso interactivo 
+
+./build/usm_enhance -i ./data/ciclista_original.jpg ./data/out_ciclista.png 
+
+Link del video: https://youtu.be/tOyqcgh925g

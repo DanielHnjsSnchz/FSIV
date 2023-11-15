@@ -14,14 +14,24 @@ fsiv_create_gaussian_filter(const int r)
     float sigma = ((float)(2*r+1))/6.0;
     ret_v = cv::Mat::zeros(2*r+1, 2*r+1, CV_32F);
 
+     /*
+    ● Filtros paso baja: Gaussian Filter.
+    w (x , y)≈ 1/(σ √ 2 π)* exp [ −( x^2 + y^2 )/(2σ^2) ])
+    */
+
     for (int i = r; i >= -r; --i){
+
         for(int j = -r; j <= r; ++j){
 
+            //−( x^2 + y^2 )
             float dividendo = - (std::pow(i, 2) + std::pow(j, 2));
+            //−( x^2 + y^2 )/(2σ^2)
             float divisor = 2 * std::pow(sigma, 2);
+            //exp [ −( x^2 + y^2 )/(2σ^2) ]
             ret_v.at<float>(i+r, j+r) = std::exp(dividendo/divisor);
             
         }
+
     }
 
     cv::normalize(ret_v, ret_v, 1.0, 0.0, cv::NORM_L1);
@@ -48,11 +58,9 @@ fsiv_extend_image(const cv::Mat& img, const cv::Size& new_size, int ext_type)
     float border_lr = (new_size.width - img.size().width)/2.0;
 
     if (ext_type == 0)
-        cv::copyMakeBorder(img, out, floor(border_tb), ceil(border_tb),
-            floor(border_lr), ceil(border_lr), cv::BORDER_CONSTANT, cv::Scalar(0,0,0));
+        cv::copyMakeBorder(img, out, floor(border_tb), ceil(border_tb), floor(border_lr), ceil(border_lr), cv::BORDER_CONSTANT, cv::Scalar(0,0,0));//CONSTANT es padding constante con scalar a 0
     else
-        cv::copyMakeBorder(img, out, floor(border_tb), ceil(border_tb),
-            floor(border_lr), ceil(border_lr), cv::BORDER_WRAP);
+        cv::copyMakeBorder(img, out, floor(border_tb), ceil(border_tb), floor(border_lr), ceil(border_lr), cv::BORDER_WRAP);//BORDER_WRAP=circular
 
     //
     CV_Assert(out.type()==img.type());
@@ -75,18 +83,18 @@ fsiv_create_sharpening_filter(const int filter_type, int r1, int r2)
     if (filter_type == 0){
         float data_impulso[9] = { 0, 0, 0, 0, 1, 0, 0, 0, 0 };
         cv::Mat impulso = cv::Mat(3, 3, CV_32FC1, data_impulso);
-        float data_lap_4[9] = { 0, 1, 0, 1, -4, 1, 0, 1, 0 };
-        cv::Mat lap_4 = cv::Mat(3, 3, CV_32FC1, data_lap_4);
+        float data_laplaciano_4[9] = { 0, 1, 0, 1, -4, 1, 0, 1, 0 };
+        cv::Mat laplaciano_4 = cv::Mat(3, 3, CV_32FC1, data_laplaciano_4);
 
-        filter = impulso - lap_4;
+        filter = impulso - laplaciano_4;
 
     } else if (filter_type == 1) {
         float data_impulso[9] = { 0, 0, 0, 0, 1, 0, 0, 0, 0 };
         cv::Mat impulso = cv::Mat(3, 3, CV_32FC1, data_impulso);
-        float data_lap_8[9] = { 1, 1, 1, 1, -8, 1, 1, 1, 1 };
-        cv::Mat lap_8 = cv::Mat(3, 3, CV_32FC1, data_lap_8);
+        float data_laplaciano_8[9] = { 1, 1, 1, 1, -8, 1, 1, 1, 1 };
+        cv::Mat laplaciano_8 = cv::Mat(3, 3, CV_32FC1, data_laplaciano_8);
 
-        filter = impulso - lap_8;
+        filter = impulso - laplaciano_8;
 
     } else if (filter_type == 2){
         cv::Mat G_r1 = fsiv_create_gaussian_filter(r1);
@@ -96,8 +104,9 @@ fsiv_create_sharpening_filter(const int filter_type, int r1, int r2)
         cv::Mat impulso = cv::Mat::zeros(G_r1.size(), CV_32FC1);
         impulso.at<float>(r2, r2) = 1;
 
-        cv::Mat dog = G_r2 - G_r1;
-        filter = impulso - dog;
+        //Operacion
+        cv::Mat DoG = G_r2 - G_r1;
+        filter = impulso - DoG;
     }
 
 

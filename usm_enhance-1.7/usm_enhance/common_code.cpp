@@ -34,7 +34,9 @@ fsiv_create_gaussian_filter(const int r)
     */
 
     for (int i = r; i >= -r; --i){
+
         for(int j = -r; j <= r; ++j){
+
             //−( x^2 + y^2 )
             float dividendo = - (std::pow(i, 2) + std::pow(j, 2));
             //−( x^2 + y^2 )/(2σ^2)
@@ -43,6 +45,7 @@ fsiv_create_gaussian_filter(const int r)
             ret_v.at<float>(i+r, j+r) = std::exp(dividendo/divisor);
             
         }
+
     }
 
     //1/(σ √ 2 π)--> esto es para normalizar
@@ -65,14 +68,10 @@ fsiv_fill_expansion(cv::Mat const& in, const int r)
     //Use of cv::copyMakeBorder is not allowed.
     //Hint you don't need use any for sentence.
 
-    //crear matriz de tamaño in.size + r en cada lado(en total 2*r) y luego ir poniendo a 0 esos bordes comprobando 
-    //si el pixel que estamos pintado esta fuera del borde original con 2*r,2*-r o 2*r y 2*-r y el 
-    //resto copiamos de la imagen original
-
     //tambien se puede hacer con cv::Rect() para seleccionar la zona de interes de la imagen original
     //con sintaxis cv::Rect(Punto_X,Punto_Y,Ancho,Largo)->ancho son cols y largo rows
 
-
+    //creamos toda la matriz a cero y luego pegamos en la matriz de ceros la imagen original
     ret_v = cv::Mat::zeros(in.rows+2*r, in.cols+2*r,in.type());
     in.copyTo(ret_v(cv::Rect(r,r,in.cols,in.rows)));
 
@@ -112,9 +111,6 @@ fsiv_circular_expansion(cv::Mat const& in, const int r)
     in(cv::Rect(0, in.rows - r, r, r)).copyTo(ret_v(cv::Rect(ret_v.cols - r, 0, r, r)));
     in(cv::Rect(0, in.rows - r, in.cols, r)).copyTo(ret_v(cv::Rect(r, 0, in.cols, r)));
     
-    
-    //hacer dibujo para explicar
-
 
     //
     CV_Assert(ret_v.type()==in.type());
@@ -216,10 +212,13 @@ fsiv_usm_enhance(cv::Mat  const& in, double g, int r,
     }
 
     if(filter_type==0){
+
         if(circular){
+
             filter = fsiv_create_box_filter(r);
             expanded = fsiv_circular_expansion(in,r);
 
+            //flip del filtro en el eje z (flag=-1)
             cv::flip(filter, filter, -1);
             //filtrado
             *unsharp_mask = fsiv_filter2D(expanded, filter);
@@ -227,7 +226,9 @@ fsiv_usm_enhance(cv::Mat  const& in, double g, int r,
             //aqui se hace realmente el realce
             //Proceso: G = (1+g)I - gIL (Si g>1 se denomina high-boost filtering.)
             ret_v = fsiv_combine_images(in, *unsharp_mask, g+1, -g);
+
         }else{
+
             filter = fsiv_create_box_filter(r);
             expanded = fsiv_fill_expansion(in,r);
 
@@ -236,23 +237,28 @@ fsiv_usm_enhance(cv::Mat  const& in, double g, int r,
             ret_v = fsiv_combine_images(in, *unsharp_mask, g+1, -g);
             
         }
+
     }else if(filter_type==1){
+
         if(circular){
+
             filter = fsiv_create_gaussian_filter(r);
             expanded = fsiv_circular_expansion(in,r);
 
             cv::flip(filter, filter, -1);
             *unsharp_mask = fsiv_filter2D(expanded, filter);
             ret_v = fsiv_combine_images(in, *unsharp_mask, g+1, -g);
+
         }else{
+
             filter = fsiv_create_gaussian_filter(r); 
             expanded = fsiv_fill_expansion(in,r);
 
             cv::flip(filter, filter, -1);
             *unsharp_mask = fsiv_filter2D(expanded, filter);
             ret_v = fsiv_combine_images(in, *unsharp_mask, g+1, -g);
+
         }
-    }else{
 
     }
 
