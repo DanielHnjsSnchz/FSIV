@@ -89,9 +89,11 @@ fsiv_draw_axes(cv::Mat& img,
 
     cv::projectPoints(points, rvec, tvec, camera_matrix, dist_coeffs, img_points);
     
-    cv::line(img, img_points[0], img_points[1], cv::Scalar(0,0,255), line_width);
+
+    //FORMATO BGR!!
+    cv::line(img, img_points[0], img_points[1], cv::Scalar(255,0,0), line_width);
     cv::line(img, img_points[0], img_points[2], cv::Scalar(0,255,0), line_width);
-    cv::line(img, img_points[0], img_points[3], cv::Scalar(255,0,0), line_width);
+    cv::line(img, img_points[0], img_points[3], cv::Scalar(0,0,255), line_width);
 
     //
 }
@@ -153,6 +155,7 @@ fsiv_draw_3d_model(cv::Mat &img, const cv::Mat& M, const cv::Mat& dist_coeffs,
     points.push_back(cv::Point3f(0,0,-size));
 
     //en lo anterior vamos a escribir e introducir los puntos que queramos para la figura
+    //por ejemplo: coloso de rodas 
 
     //cv::projectPoints(points, rvec, tvec, camera_matrix, dist_coeffs, img_points);
 
