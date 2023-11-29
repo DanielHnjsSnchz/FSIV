@@ -60,9 +60,8 @@ main (int argc, char* const* argv)
 
         //TODO: First load the calibration parameters.
 
-	cv::FileStorage fs_input (calib_fname, cv::FileStorage::READ);
-        fsiv_load_calibration_parameters(fs_input, camera_size, error, 
-            K, dist_coeffs, rvec, tvec);
+	    cv::FileStorage fs_input (calib_fname, cv::FileStorage::READ);
+        fsiv_load_calibration_parameters(fs_input, camera_size, error, K, dist_coeffs, rvec, tvec);
         fs_input.release();
 
         //
@@ -75,41 +74,47 @@ main (int argc, char* const* argv)
         if (is_video)
         {
             //TODO
-		cv::VideoCapture vid_input(input_fname);
+		    cv::VideoCapture vid_input(input_fname);
             float fps = vid_input.get(cv::CAP_PROP_FPS);
+
             std::string fourcc;
             cv::VideoWriter vid_output;
-            if(parser.has("fourcc")){
-                fourcc = parser.get<cv::String>("fourcc");
-                vid_output = cv::VideoWriter(output_fname, cv::VideoWriter::fourcc(
-                    fourcc[0], fourcc[1], fourcc[2], fourcc[3]), fps, camera_size);
-            }
-            else
-                vid_output = cv::VideoWriter(output_fname, vid_input.get(cv::CAP_PROP_FOURCC),
-                     fps, camera_size);
 
-            fsiv_undistort_video_stream(vid_input, vid_output, K, dist_coeffs, 
-                1, "INPUT", "OUTPUT", fps);
+            if(parser.has("fourcc")){
+
+                fourcc = parser.get<cv::String>("fourcc");
+                vid_output = cv::VideoWriter(output_fname, cv::VideoWriter::fourcc(fourcc[0], fourcc[1], fourcc[2], fourcc[3]), fps, camera_size);
+
+            }else{
+
+                vid_output = cv::VideoWriter(output_fname, vid_input.get(cv::CAP_PROP_FOURCC), fps, camera_size);
+
+            }
+                
+
+            fsiv_undistort_video_stream(vid_input, vid_output, K, dist_coeffs, 1, "INPUT", "OUTPUT", fps);
             //
         }
         else
         {
             //TODO
-		cv::Mat img_input, img_output;
+		    cv::Mat img_input, img_output;
             img_input = cv::imread(input_fname);
+
             fsiv_undistort_image(img_input, img_output, K, dist_coeffs);
 
             cv::imshow("INPUT", img_input);
             cv::imshow("OUTPUT", img_output);
 
             int key = cv::waitKey(0) & 0xff;
-            if (key != 27)
-            {
-                if (!cv::imwrite(output_fname, img_output))
-                {
+            if (key != 27){
+
+                if (!cv::imwrite(output_fname, img_output)){
+                    
                     std::cerr << "Error: could not save the result in file '" 
                         << output_fname << "'." << std::endl;
                     return EXIT_FAILURE;
+                    
                 }
             }
             //
