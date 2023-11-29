@@ -141,25 +141,315 @@ fsiv_draw_3d_model(cv::Mat &img, const cv::Mat& M, const cv::Mat& dist_coeffs,
     // Use cv::projectPoints to get the 2D image coordinates of 3D object points,
     // build a vector of vectors of Points, one for each segment, and use
     // cv::polylines to draw the wire frame projected model.
+    
+    //cv::polylines()    
+
+    std::vector<cv::Point2f> img_pointsC1,img_pointsC2,img_medioC1,img_medioC2,img_cono1;
+    std::vector<cv::Point3f> pointsC1,medioC1;
+    std::vector<cv::Point3f> pointsC2,medioC2,cono1;
+
+    float radius = 0.5 * size;  // Radio del arco
+    
+    //
+    //TORRE N1
+    //
+
+    // Circulo 1
+    for (int i = 0; i <= 360; i += 10) {
+        float theta = static_cast<float>(i) * CV_PI / 180.0;
+        float x = radius * std::cos(theta);
+        float y = radius * std::sin(theta);
+        pointsC1.push_back(cv::Point3f(x+size, y+size, 0));
+        if(i==180)
+            medioC1.push_back(cv::Point3f(x+size, y+size, 0));
+
+    }
+
+    // Circulo 2
+    for (int i = 0; i <= 360; i += 10) {
+        float theta = static_cast<float>(i) * CV_PI / 180.0;
+        float x = radius * std::cos(theta);
+        float y = radius * std::sin(theta);
+        pointsC2.push_back(cv::Point3f(x+size, y+size, -1.5*size));
+        if(i==180)
+            medioC2.push_back(cv::Point3f(x+size, y+size, -1.5*size));
+        /*if(i==270)
+            medioC2.push_back(cv::Point3f(x+2*size, y+2*size, -1.5*size));*/
+    }
+
+    cono1.push_back(cv::Point3f((medioC2.front()).x+radius,(medioC2.front()).y,(medioC2.front()).z-1.25*size));
+
+    cv::projectPoints(pointsC1, rvec, tvec, M, dist_coeffs, img_pointsC1);
+    cv::projectPoints(pointsC2, rvec, tvec, M, dist_coeffs, img_pointsC2);
+
+    cv::projectPoints(medioC1, rvec, tvec, M, dist_coeffs, img_medioC1);
+    cv::projectPoints(medioC2, rvec, tvec, M, dist_coeffs, img_medioC2);
+
+    cv::projectPoints(cono1, rvec, tvec, M, dist_coeffs, img_cono1);
+
+    for (size_t i = 0; i < img_pointsC1.size() - 1; ++i) {
+        cv::line(img, img_pointsC1[i], img_pointsC1[i + 1], cv::Scalar(0, 255, 0), 3);
+    }
+
+    for (size_t i = 0; i < img_pointsC2.size() - 1; ++i) {
+        cv::line(img, img_pointsC2[i], img_pointsC2[i + 1], cv::Scalar(0, 255, 0), 3);
+    }
+
+    cv::line(img, img_pointsC1.front(), img_pointsC2.front(), cv::Scalar(0, 255, 0), 3);
+
+    cv::line(img, img_medioC1.front(), img_medioC2.front(), cv::Scalar(0, 255, 0), 3);
+
+    cv::line(img, img_cono1.front(), img_medioC2.front(), cv::Scalar(0, 0, 255), 3);
+
+    cv::line(img, img_cono1.front(), img_pointsC2.front(), cv::Scalar(0, 0, 255), 3);
+
+    
+    //
+    //TORRE N2
+    //
 
 
-    //aqui se va a dibujar el modelo 3d por ejemplo de una piramide.
+    std::vector<cv::Point2f> img_pointsC3,img_pointsC4,img_medioC3,img_medioC4,img_cono2;
+    std::vector<cv::Point3f> pointsC3,medioC3;
+    std::vector<cv::Point3f> pointsC4,medioC4,cono2;
+
+
+    // Circulo 1
+    for (int i = 0; i <= 360; i += 10) {
+        float theta = static_cast<float>(i) * CV_PI / 180.0;
+        float x = radius * std::cos(theta);
+        float y = radius * std::sin(theta);
+        pointsC3.push_back(cv::Point3f(x+5*size, y+size, 0));
+        if(i==180)
+            medioC3.push_back(cv::Point3f(x+5*size, y+size, 0));
+
+    }
+
+    // Circulo 2
+    for (int i = 0; i <= 360; i += 10) {
+        float theta = static_cast<float>(i) * CV_PI / 180.0;
+        float x = radius * std::cos(theta);
+        float y = radius * std::sin(theta);
+        pointsC4.push_back(cv::Point3f(x+5*size, y+size, -1.5*size));
+        if(i==180)
+            medioC4.push_back(cv::Point3f(x+5*size, y+size, -1.5*size));
+    }
+
+    cono2.push_back(cv::Point3f((medioC4.front()).x+radius,(medioC4.front()).y,(medioC4.front()).z-1.25*size));
+
+    cv::projectPoints(pointsC3, rvec, tvec, M, dist_coeffs, img_pointsC3);
+    cv::projectPoints(pointsC4, rvec, tvec, M, dist_coeffs, img_pointsC4);
+
+    cv::projectPoints(medioC3, rvec, tvec, M, dist_coeffs, img_medioC3);
+    cv::projectPoints(medioC4, rvec, tvec, M, dist_coeffs, img_medioC4);
+
+    cv::projectPoints(cono2, rvec, tvec, M, dist_coeffs, img_cono2);
+
+    for (size_t i = 0; i < img_pointsC3.size() - 1; ++i) {
+        cv::line(img, img_pointsC3[i], img_pointsC3[i + 1], cv::Scalar(0, 255, 0), 3);
+    }
+
+    for (size_t i = 0; i < img_pointsC4.size() - 1; ++i) {
+        cv::line(img, img_pointsC4[i], img_pointsC4[i + 1], cv::Scalar(0, 255, 0), 3);
+    }
+
+    cv::line(img, img_pointsC3.front(), img_pointsC4.front(), cv::Scalar(0, 255, 0), 3);
+
+    cv::line(img, img_medioC3.front(), img_medioC4.front(), cv::Scalar(0, 255, 0), 3);
+
+    cv::line(img, img_cono2.front(), img_medioC4.front(), cv::Scalar(0, 0, 255), 3);
+
+    cv::line(img, img_cono2.front(), img_pointsC4.front(), cv::Scalar(0, 0, 255), 3);
+
+
+    //
+    //IGLESIA
+    //
+
 
     std::vector<cv::Point2f> img_points;
     std::vector<cv::Point3f> points;
-    std::vector<std::vector<cv::Point3f>> segment_points;
 
-    points.push_back(cv::Point3f(0,0,0));
-    points.push_back(cv::Point3f(size,0,0));
-    points.push_back(cv::Point3f(0,size,0));
-    points.push_back(cv::Point3f(0,0,-size));
+    float half_square = size/2.0;
 
-    //en lo anterior vamos a escribir e introducir los puntos que queramos para la figura
-    //por ejemplo: coloso de rodas 
+    points.push_back(cv::Point3f(size,2*size,0));
+    points.push_back(cv::Point3f(5*size,2*size,0));
+    points.push_back(cv::Point3f(size,3*size,0));
+    points.push_back(cv::Point3f(5*size,3*size,0));
+ 
+    points.push_back(cv::Point3f(2*size,2*size,-size));
+    points.push_back(cv::Point3f(5*size,2*size,-size));
+    points.push_back(cv::Point3f(2*size,3*size,-size));
+    points.push_back(cv::Point3f(5*size,3*size,-size));    
 
-    //cv::projectPoints(points, rvec, tvec, camera_matrix, dist_coeffs, img_points);
+    points.push_back(cv::Point3f(size,2*size,-2*size));
+    points.push_back(cv::Point3f(2*size,2*size,-2*size));
+    points.push_back(cv::Point3f(size,3*size,-2*size));
+    points.push_back(cv::Point3f(2*size,3*size,-2*size));
+    points.push_back(cv::Point3f(2*size,2*size + half_square,-2*size));
+    points.push_back(cv::Point3f(5*size,2*size + half_square,-2*size));
 
-    //cv::polylines()    
+    points.push_back(cv::Point3f(1*size + half_square,2*size + half_square,-3*size));
+
+    cv::projectPoints(points, rvec, tvec, M, dist_coeffs, img_points);
+
+    cv::line(img, img_points[0], img_points[1], cv::Scalar(255,5,0), 3);
+    cv::line(img, img_points[0], img_points[2], cv::Scalar(255,5,0), 3);
+    cv::line(img, img_points[2], img_points[3], cv::Scalar(255,5,0), 3);
+    cv::line(img, img_points[1], img_points[3], cv::Scalar(255,5,0), 3);
+
+    cv::line(img, img_points[4], img_points[5], cv::Scalar(0,0,255), 3);
+    cv::line(img, img_points[6], img_points[7], cv::Scalar(0,0,255), 3);
+    cv::line(img, img_points[5], img_points[7], cv::Scalar(0,0,255), 3);
+    
+    cv::line(img, img_points[1], img_points[5], cv::Scalar(255,5,0), 3);
+    cv::line(img, img_points[3], img_points[7], cv::Scalar(255,5,0), 3);
+
+    cv::line(img, img_points[8], img_points[9], cv::Scalar(0,0,255), 3);
+    cv::line(img, img_points[8], img_points[10], cv::Scalar(0,0,255), 3);
+    cv::line(img, img_points[9], img_points[11], cv::Scalar(0,0,255), 3);
+    cv::line(img, img_points[10], img_points[11], cv::Scalar(0,0,255), 3);
+    cv::line(img, img_points[12], img_points[13], cv::Scalar(0,0,255), 3);
+
+    cv::line(img, img_points[12], img_points[4], cv::Scalar(0,0,255), 3);
+    cv::line(img, img_points[12], img_points[6], cv::Scalar(0,0,255), 3);
+    cv::line(img, img_points[13], img_points[5], cv::Scalar(0,0,255), 3);
+    cv::line(img, img_points[13], img_points[7], cv::Scalar(0,0,255), 3);
+
+    cv::line(img, img_points[0], img_points[8], cv::Scalar(255,5,0), 3);
+    cv::line(img, img_points[4], img_points[9], cv::Scalar(255,5,0), 3);
+    cv::line(img, img_points[2], img_points[10], cv::Scalar(255,5,0), 3);
+    cv::line(img, img_points[6], img_points[11], cv::Scalar(255,5,0), 3);
+ 
+    cv::line(img, img_points[14], img_points[8], cv::Scalar(0,0,255), 3);
+    cv::line(img, img_points[14], img_points[9], cv::Scalar(0,0,255), 3);
+    cv::line(img, img_points[14], img_points[10], cv::Scalar(0,0,255), 3);
+    cv::line(img, img_points[14], img_points[11], cv::Scalar(0,0,255), 3);
+
+
+
+    //
+    //TORRE N3
+    //
+
+
+    std::vector<cv::Point2f> img_pointsC5,img_pointsC6,img_medioC5,img_medioC6,img_cono3;
+    std::vector<cv::Point3f> pointsC5,medioC5;
+    std::vector<cv::Point3f> pointsC6,medioC6,cono3;
+
+
+    // Circulo 1
+    for (int i = 0; i <= 360; i += 10) {
+        float theta = static_cast<float>(i) * CV_PI / 180.0;
+        float x = radius * std::cos(theta);
+        float y = radius * std::sin(theta);
+        pointsC5.push_back(cv::Point3f(x+size, y+4*size, 0));
+        if(i==180)
+            medioC5.push_back(cv::Point3f(x+size, y+4*size, 0));
+
+    }
+
+    // Circulo 2
+    for (int i = 0; i <= 360; i += 10) {
+        float theta = static_cast<float>(i) * CV_PI / 180.0;
+        float x = radius * std::cos(theta);
+        float y = radius * std::sin(theta);
+        pointsC6.push_back(cv::Point3f(x+size, y+4*size, -1.5*size));
+        if(i==180)
+            medioC6.push_back(cv::Point3f(x+size, y+4*size, -1.5*size));
+        /*if(i==270)
+            medioC2.push_back(cv::Point3f(x+2*size, y+2*size, -1.5*size));*/
+    }
+
+    cono3.push_back(cv::Point3f((medioC6.front()).x+radius,(medioC6.front()).y,(medioC6.front()).z-1.25*size));
+
+    cv::projectPoints(pointsC5, rvec, tvec, M, dist_coeffs, img_pointsC5);
+    cv::projectPoints(pointsC6, rvec, tvec, M, dist_coeffs, img_pointsC6);
+
+    cv::projectPoints(medioC5, rvec, tvec, M, dist_coeffs, img_medioC5);
+    cv::projectPoints(medioC6, rvec, tvec, M, dist_coeffs, img_medioC6);
+
+    cv::projectPoints(cono3, rvec, tvec, M, dist_coeffs, img_cono3);
+
+    for (size_t i = 0; i < img_pointsC5.size() - 1; ++i) {
+        cv::line(img, img_pointsC5[i], img_pointsC5[i + 1], cv::Scalar(0, 255, 0), 3);
+    }
+
+    for (size_t i = 0; i < img_pointsC6.size() - 1; ++i) {
+        cv::line(img, img_pointsC6[i], img_pointsC6[i + 1], cv::Scalar(0, 255, 0), 3);
+    }
+
+    cv::line(img, img_pointsC5.front(), img_pointsC6.front(), cv::Scalar(0, 255, 0), 3);
+
+    cv::line(img, img_medioC5.front(), img_medioC6.front(), cv::Scalar(0, 255, 0), 3);
+
+    cv::line(img, img_cono3.front(), img_medioC6.front(), cv::Scalar(0, 0, 255), 3);
+
+    cv::line(img, img_cono3.front(), img_pointsC6.front(), cv::Scalar(0, 0, 255), 3);
+
+
+
+    //
+    //TORRE N4
+    //
+
+
+    std::vector<cv::Point2f> img_pointsC7,img_pointsC8,img_medioC7,img_medioC8,img_cono4;
+    std::vector<cv::Point3f> pointsC7,medioC7;
+    std::vector<cv::Point3f> pointsC8,medioC8,cono4;
+
+
+    // Circulo 1
+    for (int i = 0; i <= 360; i += 10) {
+        float theta = static_cast<float>(i) * CV_PI / 180.0;
+        float x = radius * std::cos(theta);
+        float y = radius * std::sin(theta);
+        pointsC7.push_back(cv::Point3f(x+5*size, y+4*size, 0));
+        if(i==180)
+            medioC7.push_back(cv::Point3f(x+5*size, y+4*size, 0));
+
+    }
+
+    // Circulo 2
+    for (int i = 0; i <= 360; i += 10) {
+        float theta = static_cast<float>(i) * CV_PI / 180.0;
+        float x = radius * std::cos(theta);
+        float y = radius * std::sin(theta);
+        pointsC8.push_back(cv::Point3f(x+5*size, y+4*size, -1.5*size));
+        if(i==180)
+            medioC8.push_back(cv::Point3f(x+5*size, y+4*size, -1.5*size));
+        /*if(i==270)
+            medioC2.push_back(cv::Point3f(x+2*size, y+2*size, -1.5*size));*/
+    }
+
+    cono4.push_back(cv::Point3f((medioC8.front()).x+radius,(medioC8.front()).y,(medioC8.front()).z-1.25*size));
+
+    cv::projectPoints(pointsC7, rvec, tvec, M, dist_coeffs, img_pointsC7);
+    cv::projectPoints(pointsC8, rvec, tvec, M, dist_coeffs, img_pointsC8);
+
+    cv::projectPoints(medioC7, rvec, tvec, M, dist_coeffs, img_medioC7);
+    cv::projectPoints(medioC8, rvec, tvec, M, dist_coeffs, img_medioC8);
+
+    cv::projectPoints(cono4, rvec, tvec, M, dist_coeffs, img_cono4);
+
+    for (size_t i = 0; i < img_pointsC7.size() - 1; ++i) {
+        cv::line(img, img_pointsC7[i], img_pointsC7[i + 1], cv::Scalar(0, 255, 0), 3);
+    }
+
+    for (size_t i = 0; i < img_pointsC8.size() - 1; ++i) {
+        cv::line(img, img_pointsC8[i], img_pointsC8[i + 1], cv::Scalar(0, 255, 0), 3);
+    }
+
+    cv::line(img, img_pointsC7.front(), img_pointsC8.front(), cv::Scalar(0, 255, 0), 3);
+
+    cv::line(img, img_medioC7.front(), img_medioC8.front(), cv::Scalar(0, 255, 0), 3);
+
+    cv::line(img, img_cono4.front(), img_medioC8.front(), cv::Scalar(0, 0, 255), 3);
+
+    cv::line(img, img_cono4.front(), img_pointsC8.front(), cv::Scalar(0, 0, 255), 3);
+
+
+
 
     //
 }

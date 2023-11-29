@@ -108,6 +108,13 @@ main (int argc, char* const* argv)
         //TODO
         //Load camera calibration parameters.
 
+        cv::FileStorage fs(intrinsics_file, cv::FileStorage::READ);
+        cv::Size camera_size;
+        float error;
+        cv::Mat camera_matrix, dist_coeffs, rvec, tvec;
+        fsiv_load_calibration_parameters(fs, camera_size, error,
+            camera_matrix, dist_coeffs, rvec, tvec);
+        fs.release();
 
         //
 
@@ -115,6 +122,9 @@ main (int argc, char* const* argv)
         //TODO
         //Compute the 3d coordinates of the board corners.
 
+        std::vector<cv::Point3f> points3d;
+        std::vector<cv::Point2f> points2d;
+        points3d = fsiv_generate_3d_calibration_points(board_size, size);
 
         //
 
@@ -129,9 +139,27 @@ main (int argc, char* const* argv)
         {            
             //TODO
 
+            cap >> input_frame;
 
-
-
+            if(fsiv_fast_find_chessboard_corners(input_frame, board_size,points2d)){
+                fsiv_compute_camera_pose(points3d, points2d, camera_matrix,
+                    dist_coeffs, rvec, tvec);
+                if (!projected_image.empty()){
+                    fsiv_project_image(projected_image, input_frame, board_size, points2d);
+                } else if (projected_video.isOpened()){
+                    cv::Mat projected_video_frame;
+                    projected_video >> projected_video_frame;
+                    if (!projected_video_frame.empty())
+                        fsiv_project_image(projected_video_frame, input_frame, 
+                            board_size, points2d);
+                } else if (draw_axis){
+                    fsiv_draw_axes(input_frame, camera_matrix, dist_coeffs,
+                        rvec, tvec, size, 3);
+                } else {
+                    fsiv_draw_3d_model(input_frame, camera_matrix, dist_coeffs, 
+                        rvec, tvec, size);
+                }
+            }
 
 
 
