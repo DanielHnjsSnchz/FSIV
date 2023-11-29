@@ -1,5 +1,9 @@
-Se han realizado todos los apartados de la práctica. Los comandos a continuación son ejecutados
-desde el directorio ./i02hisad/aug_real.
+Se han realizado todos los apartados de la práctica. 
+Los comandos a continuación son ejecutados desde el directorio ./i02hisad/aug_real.
+
+El modelo 3d es una iglesia rodeada de 4 torres cilindricas con un cono como tejado.
+Las 4 torres son iguales y se calculan usando vectores distintos para los lados del 
+cilindro, las circunferencias y los conos.
 
 1) Proyección de una imagen en el video
 
@@ -16,3 +20,5 @@ desde el directorio ./i02hisad/aug_real.
 4) Modelo 3D de una iglesia y 4 torres cilindricas con tejado en forma de cono
 
 ./build/aug_real 5 6 0.03 -m ./data/logitech.xml ./data/tablero_000_000.avi
+
+Link del video: https://youtu.be/Doo68D3yIgA

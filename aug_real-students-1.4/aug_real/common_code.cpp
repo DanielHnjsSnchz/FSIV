@@ -16,7 +16,9 @@ fsiv_generate_3d_calibration_points(const cv::Size& board_size,
     for(int i = 1; i<=board_size.height; i++){
 
         for(int j = 1; j<=board_size.width; j++){
+
             ret_v.push_back(cv::Point3f(j*square_size, i*square_size,0));
+            
         }
 
     }
