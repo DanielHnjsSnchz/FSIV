@@ -72,6 +72,20 @@ main (int argc, char* const* argv)
         //TODO
 
 
+        cv::namedWindow("OUTPUT");
+
+        cv::Mat img_input, img_output;
+
+        cv::Mat camera_matrix, dist_coeffs, rvec, tvec;
+        cv::Size camera_size, board_size(cols-1, rows-1);
+        float error;
+
+        std::vector<cv::Point3f> points3d;
+        points3d = fsiv_generate_3d_calibration_points(board_size, square_size);
+        std::vector<cv::Point2f> points2d;
+
+        std::vector<std::vector<cv::Point3f>> world_points;
+        std::vector<std::vector<cv::Point2f>> camera_points;
 
 
         if (parser.has("i"))
@@ -81,6 +95,25 @@ main (int argc, char* const* argv)
             //Remenber: only one view is needed.
 
 
+            img_input = cv::imread(input_fnames[0]);
+
+            std::string intrinsic_fname = parser.get<cv::String> ("i");
+            cv::FileStorage fs_input (intrinsic_fname, cv::FileStorage::READ);
+            fsiv_load_calibration_parameters(fs_input, camera_size, error, 
+                camera_matrix, dist_coeffs, rvec, tvec);
+            fs_input.release();
+            if(fsiv_find_chessboard_corners(img_input, board_size, points2d)){
+                fsiv_compute_camera_pose(points3d, points2d, camera_matrix, 
+                    dist_coeffs, rvec, tvec);
+            } else {
+                std::cout << "Error finding chessboard corners" << std::endl;
+                exit(-1);
+            }
+
+            cv::FileStorage fs_output (output_fname, cv::FileStorage::WRITE);
+            fsiv_save_calibration_parameters(fs_output, camera_size, error, 
+            camera_matrix, dist_coeffs, rvec, tvec);
+            fs_output.release();
 
 
 
@@ -90,6 +123,11 @@ main (int argc, char* const* argv)
                 //TODO
                 //Show WCS axis.
 
+                img_output = img_input.clone();
+                fsiv_draw_axes(img_output, camera_matrix, dist_coeffs,
+                    rvec, tvec, square_size, 3);
+                cv::imshow("OUTPUT", img_output);
+                int k = cv::waitKey() & 0xff;
 
                 //
             }
@@ -101,6 +139,31 @@ main (int argc, char* const* argv)
             //Remember: For each view (at least two) you must find the
             //chessboard to get the 3D -> 2D matches.
 
+            if (input_fnames.size() < 2){
+                std::cout << "More than 2 input needed" << std::endl;
+                exit(-1);
+            }
+
+            for (int i = 0; i < input_fnames.size(); i++){
+                img_input = cv::imread(input_fnames[i]);
+                if (fsiv_find_chessboard_corners(img_input, board_size, points2d)){
+                    camera_points.push_back(points2d);
+                    world_points.push_back(points3d);
+                } else {
+                    std::cout << "Error finding chessboard corners" << std::endl;
+                    exit(-1);
+                }
+            }
+
+            std::vector<cv::Mat> rvecs, tvecs;
+            camera_size = img_input.size();
+            error = fsiv_calibrate_camera(camera_points, world_points, camera_size,
+                camera_matrix, dist_coeffs, &rvecs, &tvecs);
+
+            cv::FileStorage fs_output (output_fname, cv::FileStorage::WRITE);
+            fsiv_save_calibration_parameters(fs_output, camera_size, error, 
+                camera_matrix, dist_coeffs);
+            fs_output.release();
 
             //
 
@@ -109,6 +172,13 @@ main (int argc, char* const* argv)
                 //TODO
                 //Show WCS axis on each pattern view.
 
+                for (int i = 0; i < input_fnames.size(); i++){
+                    img_output = cv::imread(input_fnames[i]);
+                    fsiv_draw_axes(img_output, camera_matrix, dist_coeffs,
+                        rvecs[i], tvecs[i], square_size, 3) ;
+                    cv::imshow("OUTPUT", img_output);
+                    int k = cv::waitKey() & 0xff;
+                } 
 
                 //
             }
